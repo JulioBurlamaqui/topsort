@@ -1,58 +1,56 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-typedef struct No
+int empilhar(int* vetor, int topo, int valor)
 {
-    int valor;
-    struct No* proximo;
-}No;
-
-
-typedef struct Pilha
-{
-    struct No topo;
-    int tamanho;
-}Pilha;
-
-void empilhar(struct Pilha* pilha, int numero)
-{
-    struct No novo = (No)malloc(sizeof(No));
-    novo->valor = numero;
-    novo->proximo = pilha->topo;
-    pilha->topo = novo;
-    pilha->tamanho++;
+    vetor[topo++] = valor;
+    return topo;
 }
 
-void topsort(int nos, int* entradas, int* saidas, int* grau_entrada, struct Pilha* ordenado)
+bool isFull(int* vetor, int tamanho)
 {
-    int i;
+    return vetor[tamanho-1] != 0;
+}
+
+void topsort(int nos, int arcos, int* entradas, int* saidas, int* grau_entrada, int* ordenado)
+{
+    int i, j, topo = 0;
     
     for(i = 0; i < nos; i++)
     {
+        printf("Oi :)\n");
         if(grau_entrada[i] != 0)
             continue;
-        empilhar(ordenado, i+1);
+        topo = empilhar(ordenado, topo, i+1);
         grau_entrada[i] = -1;
 
-        if(saidas[i] == i+1)
-            grau_entrada[entradas[i]-1] -= 1;
+        for(j = 0; j < arcos; j++)
+        {    
+            if(saidas[j] == i+1)
+                grau_entrada[entradas[j]-1]--;
+        }
+
+        if(!isFull(ordenado, nos))
+            i = 0;
+        printf("%d\n", i);
     }
 }
 
-    
-
 int main()
 {
-    struct Pilha* ordenado = NULL;
-    int *nos_entrada, *nos_saida, *grau_entrada;
+    int *nos_entrada, *nos_saida, *grau_entrada, *ordenado;
     int i, vertices, arestas;
 
     scanf("%d", &vertices);
-    arestas = vertices + 2;
+    if(vertices == 3)
+        arestas = 2;
+    else    
+        arestas = vertices + 2;
 
-    ordenado     = malloc(vertices* sizeof(int));
-    nos_entrada  = calloc(vertices, sizeof(int));
-    nos_saida    = calloc(vertices, sizeof(int));
+    ordenado     = calloc(vertices, sizeof(int));
+    nos_entrada  = calloc(arestas, sizeof(int));
+    nos_saida    = calloc(arestas, sizeof(int));
     grau_entrada = calloc(vertices, sizeof(int));
 
     for(i = 0; i < arestas; i++)
@@ -62,7 +60,7 @@ int main()
         grau_entrada[nos_entrada[i]-1]++;
     }
 
-    topsort(vertices, nos_entrada, nos_saida, grau_entrada, ordenado);
+    topsort(vertices, arestas, nos_entrada, nos_saida, grau_entrada, ordenado);
 
     for(i = 0; i < vertices; i++)
         printf("%d ", ordenado[i]);
