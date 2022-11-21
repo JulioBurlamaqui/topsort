@@ -15,13 +15,13 @@ bool isFull(int* vetor, int tamanho)
 
 void topsort(int nos, int arcos, int* entradas, int* saidas, int* grau_entrada, int* ordenado)
 {
-    int i, j, topo = 0;
+    int i = 0, j, topo = 0;
     
-    for(i = 0; i < nos; i++)
+    while(!isFull(ordenado, nos))
     {
-        printf("Oi :)\n");
-        if(grau_entrada[i] != 0)
-            continue;
+        while(grau_entrada[i] != 0)
+            i++;
+            
         topo = empilhar(ordenado, topo, i+1);
         grau_entrada[i] = -1;
 
@@ -31,9 +31,7 @@ void topsort(int nos, int arcos, int* entradas, int* saidas, int* grau_entrada, 
                 grau_entrada[entradas[j]-1]--;
         }
 
-        if(!isFull(ordenado, nos))
-            i = 0;
-        printf("%d\n", i);
+        i = 0;
     }
 }
 
